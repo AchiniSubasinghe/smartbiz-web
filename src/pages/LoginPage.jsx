@@ -10,7 +10,7 @@ export default function LoginPage() {
       justifyContent="center"
       alignItems="center"
       sx={{
-        backgroundColor: "#f4f8fb",
+        background: "linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC)",
         padding: 2,
       }}
     >
@@ -39,7 +39,7 @@ export default function LoginPage() {
             textAlign="center"
             fontWeight="700"
             mb={1}
-            color="#033b5c"
+            color="#090b0cff"
           >
             Welcome Back
           </Typography>
