@@ -17,7 +17,8 @@ export default function RegisterForm() {
     role: ""
   });
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -28,22 +29,27 @@ export default function RegisterForm() {
 
   const handleRegister = async () => {
     setError("");
+    setLoading(true);
 
     try {
-      const res = await api.post("/signup", form, {
-        withCredentials: true, // IMPORTANT
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
+      const res = await api.post("/signUp", form);
       alert("Registration successful!");
       window.location.href = "/login";
-      
+
     } catch (err) {
-      console.log("REGISTER ERROR:", err);
-      setError("Registration failed. Please check your inputs.");
+      if (err.response?.data?.data) {
+        const validationErrors = err.response.data.data;
+        // const firstError = Object.values(validationErrors)[0];
+        setError(validationErrors);
+        console.log("Validation Errors: ", validationErrors);
+      } else {
+        setError({ general: "Registration failed!" });
+      }
     }
+    finally {
+      setLoading(false);
+    }
+
   };
 
   return (
@@ -56,6 +62,13 @@ export default function RegisterForm() {
         margin="normal"
         onChange={handleChange}
       />
+      <Box
+        color="error.main"
+        fontSize="0.75rem"
+        mt={0.5}
+      >
+        {error.fullName}
+      </Box>
 
       <TextField
         label="Username"
@@ -65,6 +78,13 @@ export default function RegisterForm() {
         margin="normal"
         onChange={handleChange}
       />
+      <Box
+        color="error.main"
+        fontSize="0.75rem"
+        mt={0.5}
+      >
+        {error.userName}
+      </Box>
 
       <TextField
         label="Password"
@@ -75,6 +95,13 @@ export default function RegisterForm() {
         margin="normal"
         onChange={handleChange}
       />
+      <Box
+        color="error.main"
+        fontSize="0.75rem"
+        mt={0.5}
+      >
+        {error.password}
+      </Box>
 
       <TextField
         select
@@ -88,12 +115,19 @@ export default function RegisterForm() {
         <MenuItem value="ADMIN">ADMIN</MenuItem>
         <MenuItem value="EDITOR">EDITOR</MenuItem>
       </TextField>
+      <Box
+        color="error.main"
+        fontSize="0.75rem"
+        mt={0.5}
+      >
+        {error.role}
+      </Box>
 
-      {error && (
+      {/* {error && (
         <Typography color="error" variant="body2" mt={1}>
           {error}
         </Typography>
-      )}
+      )} */}
 
       <Button
         variant="contained"
