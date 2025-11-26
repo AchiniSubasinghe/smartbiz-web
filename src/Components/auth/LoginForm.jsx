@@ -1,11 +1,20 @@
 import { useState } from "react";
-import {TextField,Button,Box,Typography,CircularProgress,Link,Divider} from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  CircularProgress,
+  Link,
+  Divider,
+} from "@mui/material";
 import api from "../../api/axios";
+import { generatePath } from "react-router-dom";
 
 export default function LoginForm() {
   const [form, setForm] = useState({
-    username: "",
-    password: ""
+    // username: "",
+    // password: "",
   });
 
   const [error, setError] = useState("");
@@ -23,24 +32,38 @@ export default function LoginForm() {
     setError("");
 
     try {
-      const res = await api.post("/signing", form);
-
+      const res = await api.post("/signIn", form, { withCredentials: true });
       const user = res.data.data.userResponseDto;
+
       localStorage.setItem("user", JSON.stringify(user));
 
-      window.location.href = "/dashboard";
+      if (user.role === "ADMIN") {
+        window.location.href = "/dashboard";
+      } else {
+        window.location.href = "/profile";
+      }
 
     } catch (err) {
-      setError("Invalid username or password");
-    }
+      console.log("LOGIN ERROR => ", err);
 
-    setLoading(false);
+      if (err.response?.data?.data) {
+        // const validationErrors = err.response.data.data;
+        // const firstError = Object.values(validationErrors)[0];
+        setError(err.response.data.data);
+
+      } else if (err.response?.data?.message) {
+        setError({general:err.response.data.message});
+      } else {
+        setError({general:"Login failed! Please check credentials."});
+      }
+
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Box sx={{ mt: 1 }}>
-      
-
       <Divider sx={{ mb: 3 }} />
 
       <TextField
@@ -51,6 +74,14 @@ export default function LoginForm() {
         onChange={handleChange}
       />
 
+      <Box
+        color="error.main"
+        fontSize="0.75rem"
+        mt={0.5}
+        >
+        {error.username}
+      </Box>
+
       <TextField
         label="Password"
         name="password"
@@ -60,11 +91,13 @@ export default function LoginForm() {
         onChange={handleChange}
       />
 
-      {error && (
-        <Typography color="error" variant="body2" mt={1}>
-          {error}
-        </Typography>
-      )}
+      <Box
+        color="error.main"
+        fontSize="0.75rem"    
+        mt={0.5}
+       >
+        {error.password}
+       </Box>
 
       <Box textAlign="right" mt={1}>
         <Link underline="hover" fontSize="14px" href="#">
