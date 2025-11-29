@@ -12,7 +12,7 @@ import api from "../../api/axios";
 export default function RegisterForm() {
   const [form, setForm] = useState({
     fullName: "",
-    userName: "",
+    username: "",
     password: "",
     role: ""
   });
@@ -72,8 +72,8 @@ export default function RegisterForm() {
 
       <TextField
         label="Username"
-        name="userName"
-        value={form.userName}
+        name="username"
+        value={form.username}
         fullWidth
         margin="normal"
         onChange={handleChange}
@@ -83,7 +83,7 @@ export default function RegisterForm() {
         fontSize="0.75rem"
         mt={0.5}
       >
-        {error.userName}
+        {error.username}
       </Box>
 
       <TextField
